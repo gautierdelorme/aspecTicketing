@@ -1,19 +1,18 @@
-import com.sun.javafx.collections.MappingChange.Map;
+import java.util.HashMap;
 
 public class User {
 	private int id;
 	private String username;
 	private String password;
 	private double credit;
-	private Map<Tickets, Integer> ticketsBuy;
+	private HashMap<Tickets, Integer> ticketsBuy;
 	
-	public User(int id, String username, String password, double credit,
-			Map<Tickets, Integer> ticketsBuy) {
+	public User(int id, String username, String password, double credit) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.credit = credit;
-		this.ticketsBuy = ticketsBuy;
+		this.ticketsBuy = new HashMap<Tickets, Integer>();
 	}
 
 	public int getId() {
@@ -48,18 +47,21 @@ public class User {
 		this.credit = credit;
 	}
 
-	public Map<Tickets, Integer> getTicketsBuy() {
+	public HashMap<Tickets, Integer> getTicketsBuy() {
 		return ticketsBuy;
 	}
 
-	public void setTicketsBuy(Map<Tickets, Integer> ticketsBuy) {
+	public void setTicketsBuy(HashMap<Tickets, Integer> ticketsBuy) {
 		this.ticketsBuy = ticketsBuy;
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password="
-				+ password + ", credit=" + credit + ", ticketsBuy="
-				+ ticketsBuy + "]";
+		String finale = "User [id=" + id + ", username=" + username + ", password="
+				+ password + ", credit=" + credit + ", ticketsBuy=\n";
+		for (Tickets key : ticketsBuy.keySet()) {
+			finale += "- "+ticketsBuy.get(key)+" "+key+"\n";
+		}
+		return finale+"]";
 	}
 }
