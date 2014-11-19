@@ -46,11 +46,11 @@ public final class Menu {
 		boolean correctLogin = false;
 		boolean keepGoing=true;
 
-		while (keepGoing && !correctLogin) {
+		/*while (keepGoing && !correctLogin) {
 			System.out.println ("Please enter your login : ");
-			string login = Console.ReadLine ();
+			String login = sc.nextLine();
 			System.out.println ("Please enter your password : ");
-			string password = Console.ReadLine ();
+			String password = sc.nextLine();
 			try {
 				Profil userProfile = db.Query<Profil> ("SELECT * FROM Profil WHERE Login = ? and Password = ?", login, password).First();
 				userProfile.Currency = db.Get<Devise>(userProfile.CurrencyId);
@@ -75,7 +75,7 @@ public final class Menu {
 					break;
 				}
 			}
-		}
+		*/
 	}
 	
 	public static void ProfilCreationPage() {
