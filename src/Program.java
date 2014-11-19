@@ -10,6 +10,7 @@ public class Program {
 		ticketsBuy.put(ticketsFactory.getTicketConcert(), 1);
 		ticketsBuy.put(ticketsFactory.getTicketTheater(), 4);
 		user.setTicketsBuy(ticketsBuy);
+		
 		System.out.println(user);
 	}
 }

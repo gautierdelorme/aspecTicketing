@@ -64,4 +64,12 @@ public class User {
 		}
 		return finale+"]";
 	}
+	
+	public void Save() {
+		
+	}
+	
+	public User Load(String username) {
+		return null;
+	}
 }
