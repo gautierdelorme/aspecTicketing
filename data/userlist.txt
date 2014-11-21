@@ -1,0 +1,1 @@
+{"users":[{"username":"gautier","password":"la","credit":100},{"username":"solo","password":"de","credit":200}]}

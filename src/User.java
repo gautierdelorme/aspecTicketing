@@ -1,41 +1,40 @@
-import java.io.FileWriter;
 import java.util.HashMap;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
-import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
-import javax.json.JsonStructure;
+import javax.json.JsonWriter;
 
 public class User {
-	private int id;
 	private String username;
 	private String password;
-	private double credit;
+	private int credit;
 	private HashMap<Tickets, Integer> ticketsBuy;
 	
-	public User(int id, String username, String password, double credit) {
-		this.id = id;
+	public User(String username, String password, int credit) {
 		this.username = username;
 		this.password = password;
 		this.credit = credit;
 		this.ticketsBuy = new HashMap<Tickets, Integer>();
 	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+	
+	public User(String username) {
+		User loaded = load(username);
+		this.username = loaded.username;
+		this.password = loaded.password;
+		this.credit = loaded.credit;
+		this.ticketsBuy = loaded.ticketsBuy;
 	}
 
 	public String getUsername() {
@@ -58,7 +57,7 @@ public class User {
 		return credit;
 	}
 
-	public void setCredit(double credit) {
+	public void setCredit(int credit) {
 		this.credit = credit;
 	}
 
@@ -72,7 +71,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		String finale = "User [id=" + id + ", username=" + username + ", password="
+		String finale = "User [username=" + username + ", password="
 				+ password + ", credit=" + credit + ", ticketsBuy=\n";
 		for (Tickets key : ticketsBuy.keySet()) {
 			finale += "- "+ticketsBuy.get(key)+" "+key+"\n";
@@ -80,86 +79,77 @@ public class User {
 		return finale+"]";
 	}
 	
-	public void Save() {
-		java.io.File f= new File("userlist.txt");
-		if (!f.exists())
-		{
+	public void save() {
+		java.io.File f= new File("data/userlist.txt");
+		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-						
 		}
-		FileWriter writer;
 		try {
-			writer = new FileWriter("userlist.txt");
-			JsonGenerator gen = Json.createGenerator(writer);
-			gen.writeStartObject()
-			   .write("username",username)
-			   .write("password",password)
-			   .write("id",id)
-			   .write("credit",credit)
-			   .writeEnd();
-			gen.close();
+			JsonObjectBuilder userJSON = Json.createObjectBuilder();
+			JsonArrayBuilder userArrayJSON = Json.createArrayBuilder();
+			JsonObjectBuilder finalJSON = Json.createObjectBuilder();
 			
+			boolean empty = !(f.length() > 0);
+			if (!empty) {
+				InputStream fis = new FileInputStream("data/userlist.txt");	         
+		        JsonReader jsonReader = Json.createReader(fis);
+		        JsonObject jsonObject = jsonReader.readObject();
+		        jsonReader.close();
+		        fis.close();
+		        JsonArray jsonArray = jsonObject.getJsonArray("users");
+		        for(JsonValue value : jsonArray){
+		        	userArrayJSON.add(value);
+		        }
+			}
+			
+			userJSON.add("username",username)
+					.add("password",password)
+					.add("credit",credit);
+			userArrayJSON.add(userJSON);
+			finalJSON.add("users", userArrayJSON);
+			JsonObject empJsonObject = finalJSON.build();
+			OutputStream os = new FileOutputStream("data/userlist.txt");
+	        JsonWriter jsonWriter = Json.createWriter(os);
+	        jsonWriter.writeObject(empJsonObject);
+	        jsonWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
-	public User Load(String username) {
-		java.io.File f= new File("userlist.txt");
-		if (f.exists())
-		{
+	public User load(String username) {
+		User returnUser = null;
+		java.io.File f= new File("data/userlist.txt");
+		if (f.exists()) {
 			try {
-				JsonReader reader = Json.createReader(new FileReader("userlist.txt"));
-				JsonArray array = reader.readArray();
-				reader.close();
-				int index=0;
-				boolean found=false;
-				while (!found) {
-					for (int i=0;i < array.size();i++)
-					{
-						JsonObject jso= array.getJsonObject(i);
+				boolean empty = !(f.length() > 0);				
+				if (!empty) {
+					InputStream fis = new FileInputStream("data/userlist.txt");	         
+			        JsonReader jsonReader = Json.createReader(fis);
+			        JsonObject jsonObject = jsonReader.readObject();
+			        jsonReader.close();
+			        JsonArray jsonArray = jsonObject.getJsonArray("users");
+			        int i = 0;
+			        boolean found=false;
+			        while (!found && i < jsonArray.size()) {
+			        	JsonObject jso= jsonArray.getJsonObject(i);
 						String name = jso.getString("username");
-						if (name==username)
-						{
-							index=i;
+						if (name.equals(username)) {
+							System.out.println(jso.getString("username"));
 							found=true;
+							returnUser = new User(jso.getString("username"), jso.getString("password"), jso.getInt("credit"));
 						}
-					}
-					
+						i++;
+			        }
 				}
-				if (found)
-				{
-					JsonObject jso= array.getJsonObject(index);
-					String passwd=jso.getString("password");
-					int id= Integer.parseInt(jso.getString("id"));
-					double cred= Double.parseDouble(jso.getString("credit"));
-					User us= new User(id, username, passwd, cred);
-					return us;
-					
-				}
-				else 
-				{
-					return null;
-				}
-				
-				
-				
-				
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-				return null;
 			}
 		}
-		else {
-			return null;
-		}
-		
+		return returnUser;	
 	}
 }
