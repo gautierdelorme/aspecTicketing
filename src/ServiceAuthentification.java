@@ -19,6 +19,7 @@ public class ServiceAuthentification {
 		System.out.println ("**** Authentification Page ****");
 		System.out.println ("*******************************");
 		System.out.println ("login : gautier\npassword : uqtr");
+		System.out.println ("*******************************");
 
 		boolean keepGoing=true;
 		while (keepGoing) {
@@ -27,10 +28,8 @@ public class ServiceAuthentification {
 				String login = sc.nextLine();
 				System.out.println ("Please enter your password : ");
 				String password = sc.nextLine();
-				currentUser = new User(login);
-				if (currentUser != null && currentUser.getPassword().equals(password)) {
+				if (logUser(login, password) != null) {
 					keepGoing = false;
-					System.out.println ("Connexion ok !");
 				} else {
 					throw new Exception();
 				}
@@ -49,6 +48,19 @@ public class ServiceAuthentification {
 				}
 			}
 		}
+	}
+	
+	public User logUser(String login,String password) {
+		User returnValue = null;
+		try {
+			currentUser = new User(login);
+			if (currentUser != null && currentUser.getPassword().equals(password)) {
+				returnValue = currentUser;
+			}
+		} catch (Exception e) {
+			System.out.println("Cannot connect...");
+		}
+		return returnValue;
 	}
 	
 	public static void clearConsole()

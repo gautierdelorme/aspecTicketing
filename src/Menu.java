@@ -38,51 +38,55 @@ public final class Menu {
 	
 	public static void buyTicketsConnect(User usr) {
 		clearConsole();
-		System.out.println ("*******************************");
-		System.out.println ("**** Tickets Shop ****");
-		System.out.println ("*******************************");
-		System.out.println ("Hi "+usr.getUsername()+" ! Choose an event :");
-		TicketsFactory ticketsFactory = new TicketsFactory();
-		System.out.println ("1 - "+ticketsFactory.loadTicketsFrom("1995 posse"));
-		System.out.println ("2 - "+ticketsFactory.loadTicketsFrom("Le splendide"));
-		System.out.println ("3 - back to home page");
-		System.out.println ("Choice number : ");
-		boolean correctchoice = false;
-		while (!correctchoice) {
-			try {
-				switch (Integer.parseInt(sc.nextLine())) {
-				case 1 :
-					transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("1995 posse"),usr.getUsername());
-					correctchoice = true;
-					break;
-				case 2 :
-					transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("Le splendide"),usr.getUsername());
-					correctchoice = true;
-					break;
-				case 3 :
-					correctchoice = true;
-					HomePage();
-					break;
-				default :
-					throw new Exception();
+		if (usr == null) {
+			HomePage();
+		} else {
+			System.out.println ("*******************************");
+			System.out.println ("**** Tickets Shop ****");
+			System.out.println ("*******************************");
+			System.out.println ("Hi "+usr.getUsername()+" ! Choose an event :");
+			TicketsFactory ticketsFactory = new TicketsFactory();
+			System.out.println ("1 - "+ticketsFactory.loadTicketsFrom("1995 posse"));
+			System.out.println ("2 - "+ticketsFactory.loadTicketsFrom("Le splendide"));
+			System.out.println ("3 - back to home page");
+			System.out.println ("Choice number : ");
+			boolean correctchoice = false;
+			while (!correctchoice) {
+				try {
+					switch (Integer.parseInt(sc.nextLine())) {
+					case 1 :
+						transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("1995 posse"),usr.getUsername());
+						correctchoice = true;
+						break;
+					case 2 :
+						transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("Le splendide"),usr.getUsername());
+						correctchoice = true;
+						break;
+					case 3 :
+						correctchoice = true;
+						HomePage();
+						break;
+					default :
+						throw new Exception();
+					}
+				}
+				catch (Exception e) {
+					System.out.println ("Incorrect choice");
+					buyTicketsConnect(usr);
 				}
 			}
-			catch (Exception e) {
-				System.out.println ("Incorrect choice");
+			System.out.println ("back to homepage ? (y/n)");
+			switch (sc.nextLine()) {
+			case "n":
 				buyTicketsConnect(usr);
+				break;
+			case "y":
+				HomePage();
+				break;
+			default:
+				HomePage();
+				break;
 			}
-		}
-		System.out.println ("back to homepage ? (y/n)");
-		switch (sc.nextLine()) {
-		case "n":
-			buyTicketsConnect(usr);
-			break;
-		case "y":
-			HomePage();
-			break;
-		default:
-			HomePage();
-			break;
 		}
 	}
 	
@@ -104,26 +108,30 @@ public final class Menu {
 	
 	public static void personnalAccountConnect(User usr) {
 		clearConsole();
-		System.out.println ("*******************************");
-		System.out.println ("**** Personnal Account ****");
-		System.out.println ("*******************************");
-		usr = new User(usr.getUsername());
-		System.out.println("Credits : "+usr.getCredit());
-		System.out.println("Transactions : ");
-		Transaction transaction= new Transaction();
-		transaction.Printall(usr.getUsername());
-
-		System.out.println ("\nback to homepage ? (y/n)");
-		switch (sc.nextLine()) {
-		case "n":
-			personnalAccountConnect(usr);
-			break;
-		case "y":
+		if (usr == null) {
 			HomePage();
-			break;
-		default:
-			HomePage();
-			break;
+		} else {
+			System.out.println ("*******************************");
+			System.out.println ("**** Personnal Account ****");
+			System.out.println ("*******************************");
+			usr = new User(usr.getUsername());
+			System.out.println("Credits : "+usr.getCredit());
+			System.out.println("Transactions : ");
+			Transaction transaction= new Transaction();
+			transaction.Printall(usr.getUsername());
+	
+			System.out.println ("\nback to homepage ? (y/n)");
+			switch (sc.nextLine()) {
+			case "n":
+				personnalAccountConnect(usr);
+				break;
+			case "y":
+				HomePage();
+				break;
+			default:
+				HomePage();
+				break;
+			}
 		}
 	}
 	

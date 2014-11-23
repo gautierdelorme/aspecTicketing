@@ -55,19 +55,21 @@ public class Transaction {
 	}
 	
 	public void doTransaction(String username, Tickets tickets, int quantity) {
-		int total = tickets.getPrice()*quantity;
-		Transaction transaction = new Transaction();
-		transaction.setQuantity(quantity);
-		transaction.setTitle(tickets.getTitle());
-		transaction.setTotal(total);
-		transaction.setUsername(username);
-		transaction.save();
-		tickets.setNbTicketsSold(tickets.getNbTicketsSold()+quantity);
-		tickets.save();
-		User user = new User(username);
-		user.setCredit(user.getCredit() - total);
-		user.save();
-		System.out.println ("Transaction saved !");
+		if (username != null) {
+			int total = tickets.getPrice()*quantity;
+			Transaction transaction = new Transaction();
+			transaction.setQuantity(quantity);
+			transaction.setTitle(tickets.getTitle());
+			transaction.setTotal(total);
+			transaction.setUsername(username);
+			transaction.save();
+			tickets.setNbTicketsSold(tickets.getNbTicketsSold()+quantity);
+			tickets.save();
+			User user = new User(username);
+			user.setCredit(user.getCredit() - total);
+			user.save();
+			System.out.println ("Transaction saved !");
+		}
 	}
 	
 	public void save() {
