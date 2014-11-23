@@ -1,0 +1,1 @@
+{"tickets":[{"title":"Le splendide","schedule":"19h00","price":15,"nbTickets":170,"nbTicketsSold":0},{"title":"1995 posse","schedule":"21h00","price":23,"nbTickets":200,"nbTicketsSold":0}]}

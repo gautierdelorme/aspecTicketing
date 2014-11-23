@@ -1,4 +1,3 @@
-import java.util.HashMap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,13 +19,17 @@ public class User {
 	private String username;
 	private String password;
 	private int credit;
-	private HashMap<Tickets, Integer> ticketsBuy;
+	
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+		this.credit = 1000;
+	}
 	
 	public User(String username, String password, int credit) {
 		this.username = username;
 		this.password = password;
 		this.credit = credit;
-		this.ticketsBuy = new HashMap<Tickets, Integer>();
 	}
 	
 	public User(String username) {
@@ -34,7 +37,6 @@ public class User {
 		this.username = loaded.username;
 		this.password = loaded.password;
 		this.credit = loaded.credit;
-		this.ticketsBuy = loaded.ticketsBuy;
 	}
 
 	public String getUsername() {
@@ -53,7 +55,7 @@ public class User {
 		this.password = password;
 	}
 
-	public double getCredit() {
+	public int getCredit() {
 		return credit;
 	}
 
@@ -61,22 +63,10 @@ public class User {
 		this.credit = credit;
 	}
 
-	public HashMap<Tickets, Integer> getTicketsBuy() {
-		return ticketsBuy;
-	}
-
-	public void setTicketsBuy(HashMap<Tickets, Integer> ticketsBuy) {
-		this.ticketsBuy = ticketsBuy;
-	}
-
 	@Override
 	public String toString() {
-		String finale = "User [username=" + username + ", password="
-				+ password + ", credit=" + credit + ", ticketsBuy=\n";
-		for (Tickets key : ticketsBuy.keySet()) {
-			finale += "- "+ticketsBuy.get(key)+" "+key+"\n";
-		}
-		return finale+"]";
+		return "User [username=" + username + ", password="
+				+ password + ", credit=" + credit + "]";
 	}
 	
 	public void save() {
@@ -101,8 +91,13 @@ public class User {
 		        jsonReader.close();
 		        fis.close();
 		        JsonArray jsonArray = jsonObject.getJsonArray("users");
+
+		        int i = 0;
 		        for(JsonValue value : jsonArray){
-		        	userArrayJSON.add(value);
+		        	if (!jsonArray.getJsonObject(i).getString("username").equals(this.username)) {
+		        		userArrayJSON.add(value);
+		        	}
+		        	i++;
 		        }
 			}
 			
@@ -139,7 +134,6 @@ public class User {
 			        	JsonObject jso= jsonArray.getJsonObject(i);
 						String name = jso.getString("username");
 						if (name.equals(username)) {
-							System.out.println(jso.getString("username"));
 							found=true;
 							returnUser = new User(jso.getString("username"), jso.getString("password"), jso.getInt("credit"));
 						}

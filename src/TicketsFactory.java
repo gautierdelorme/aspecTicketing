@@ -1,8 +1,9 @@
 public class TicketsFactory {
-	public Tickets getTicketConcert() {
-		return new Tickets("1995 posse", "21h00", 23.0, 200);
+	public Tickets getTickets(String title, String schedule, int price, int nbTickets) {
+		return new Tickets(title,schedule,price,nbTickets);
 	}
-	public Tickets getTicketTheater() {
-		return new Tickets("Le splendide", "19h00", 15.0, 170);
+	
+	public Tickets loadTicketsFrom(String title) {
+		return new Tickets(title);
 	}
 }

@@ -1,17 +1,16 @@
 import java.util.Scanner;
 
 public final class Menu {
-	public static User currentUser;
 	public static Scanner sc = new Scanner(System.in);
 	public static void HomePage()
 	{
 		clearConsole();
 		System.out.println ("*****************************************");
-		System.out.println ("******* Welcome in GSP-Transaction ******");
+		System.out.println ("******* Welcome in AspectTicketing ******");
 		System.out.println ("*****************************************");
 		System.out.println ("Please select a number between 1 and 2: ");
-		System.out.println ("1 - Log in");
-		System.out.println ("2 - Sign up");
+		System.out.println ("1 - Buy tickets");
+		System.out.println ("2 - Personnal Account");
 		System.out.println ("Choice : ");
 		boolean correctchoice = false;
 		while (!correctchoice) {
@@ -19,67 +18,113 @@ public final class Menu {
 				switch (Integer.parseInt(sc.nextLine())) {
 				case 1 :
 					correctchoice = true;
-					AuthentificationPage ();
+					buyTicketsConnect (null);
 					break;
 				case 2 :
 					correctchoice = true;
-					ProfilCreationPage ();
+					personnalAccountConnect (null);
 					break;
 				default :
-					System.out.println ("Incorrect choice, select a number between 1 and 2 : ");
-					break;
+					throw new Exception();
 				}
 			}
 			catch (Exception e) {
-				System.err.println ("Exception : " + e);
-				System.out.println ("Incorrect choice, select a number between 1 and 2 : ");
+				System.err.println (e);
+				System.out.println ("Incorrect choice");
+				HomePage();
 			}
 		}
 	}
 	
-	public static void AuthentificationPage() {
+	public static void buyTicketsConnect(User usr) {
 		clearConsole();
 		System.out.println ("*******************************");
-		System.out.println ("**** Authentification Page ****");
+		System.out.println ("**** Tickets Shop ****");
 		System.out.println ("*******************************");
-
-		boolean correctLogin = false;
-		boolean keepGoing=true;
-
-		/*while (keepGoing && !correctLogin) {
-			System.out.println ("Please enter your login : ");
-			String login = sc.nextLine();
-			System.out.println ("Please enter your password : ");
-			String password = sc.nextLine();
+		System.out.println ("Hi "+usr.getUsername()+" ! Choose an event :");
+		TicketsFactory ticketsFactory = new TicketsFactory();
+		System.out.println ("1 - "+ticketsFactory.loadTicketsFrom("1995 posse"));
+		System.out.println ("2 - "+ticketsFactory.loadTicketsFrom("Le splendide"));
+		System.out.println ("3 - back to home page");
+		System.out.println ("Choice number : ");
+		boolean correctchoice = false;
+		while (!correctchoice) {
 			try {
-				Profil userProfile = db.Query<Profil> ("SELECT * FROM Profil WHERE Login = ? and Password = ?", login, password).First();
-				userProfile.Currency = db.Get<Devise>(userProfile.CurrencyId);
-				correctLogin = true;
-				User.CurrentUser = userProfile;
-				User.HomePage ();
-			}
-			catch (Exception e) {
-				Debug.WriteLine ("Exception : " + e);
-				System.out.println ("Incorrect informations");
-				System.out.println ("Try again ? (y/n)");
-				switch (Console.ReadLine ()) {
-				case "n":
-					keepGoing = false;
-					Menu.HomePage ();
+				switch (Integer.parseInt(sc.nextLine())) {
+				case 1 :
+					transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("1995 posse"),usr.getUsername());
+					correctchoice = true;
 					break;
-				case "y":
+				case 2 :
+					transactionWithTicketsAndUsername(ticketsFactory.loadTicketsFrom("Le splendide"),usr.getUsername());
+					correctchoice = true;
 					break;
-				default:
-					keepGoing = false;
-					Menu.HomePage ();
+				case 3 :
+					correctchoice = true;
+					HomePage();
 					break;
+				default :
+					throw new Exception();
 				}
 			}
-		*/
+			catch (Exception e) {
+				System.out.println ("Incorrect choice");
+				buyTicketsConnect(usr);
+			}
+		}
+		System.out.println ("back to homepage ? (y/n)");
+		switch (sc.nextLine()) {
+		case "n":
+			buyTicketsConnect(usr);
+			break;
+		case "y":
+			HomePage();
+			break;
+		default:
+			HomePage();
+			break;
+		}
 	}
 	
-	public static void ProfilCreationPage() {
-		
+	public static void transactionWithTicketsAndUsername(Tickets tickets, String username) {
+		System.out.println ("*******************************");
+		boolean correctchoice = false;
+		int quantity = 0;
+		int maxQuantity = tickets.getNbTickets()-tickets.getNbTicketsSold();
+		while (!correctchoice) {
+			System.out.println ("Quantity (max "+maxQuantity+") :");
+			quantity = Integer.parseInt(sc.nextLine());
+			if (quantity <= maxQuantity) {
+				correctchoice = true;
+			}
+		}
+		Transaction transaction = new Transaction();
+		transaction.doTransaction(username, tickets, quantity);
+	}
+	
+	public static void personnalAccountConnect(User usr) {
+		clearConsole();
+		System.out.println ("*******************************");
+		System.out.println ("**** Personnal Account ****");
+		System.out.println ("*******************************");
+		usr = new User(usr.getUsername());
+		System.out.println("Credits : "+usr.getCredit());
+		System.out.println("Transactions : ");
+		Transaction transaction= new Transaction();
+		transaction.Printall(usr.getUsername());
+
+		System.out.println ("\nback to homepage ? (y/n)");
+		switch (sc.nextLine()) {
+		case "n":
+			personnalAccountConnect(usr);
+			break;
+		case "y":
+			HomePage();
+			break;
+		default:
+			HomePage();
+			break;
+		}
 	}
 	
 	public static void clearConsole()
@@ -99,7 +144,7 @@ public final class Menu {
 	    }
 	    catch (final Exception e)
 	    {
-	        //  Handle any exceptions.
+	    	System.err.println(e);
 	    }
 	}
 }
